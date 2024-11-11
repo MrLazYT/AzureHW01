@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Adding Car";
+}
+@model CarViewModel
+
+<h1>Adding Car</h1>
+
+<form method="post" asp-action="Add" enctype="multipart/form-data">
+    <div class="text-danger" asp-validation-summary="All"></div>
+
+    @* <div class="m-1">
+        <label class="form-label" asp-for="Car.ImagePath">Image Path</label>
+        <input class="form-control" type="url" asp-for="Car.ImagePath" />
+        <span class="text-danger" asp-validation-for="Car.ImagePath"></span>
+    </div> *@
+
+    <div class="m-1">
+        <input asp-for="Car.ImagePath" hidden />
+        <div class="col-6">
+            <label asp-for="Car.Image" class="form-label">Image</label>
+            <input asp-for="Car.Image" class="form-control" type="file" id="formFile">
+        </div>
+
+    </div>
+
+    <div class="m-1">
+        <label class="form-label" asp-for="Car.Model">Model</label>
+        <input class="form-control" asp-for="Car.Model" />
+        <span class="text-danger" asp-validation-for="Car.Model"></span>
+    </div>
+
+    <div class="m-1">
+        <label class="form-label" asp-for="Car.Color">Color</label>
+        <input class="form-control" asp-for="Car.Color" />
+        <span class="text-danger" asp-validation-for="Car.Color"></span>
+    </div>
+
+    <div class="m-1">
+        <label class="form-label" asp-for="Car.Year">Year</label>
+        <input class="form-control" type="number" asp-for="Car.Year" />
+        <span class="text-danger" asp-validation-for="Car.Year"></span>
+    </div>
+
+    <div class="m-1">
+        <label class="form-label" asp-for="Car.CategoryId">Category</label>
+        <select class="form-select" asp-for="Car.CategoryId">
+            @foreach(CategoryDto category in Model.Categories)
+            {
+                <option value="@category.Id">@category</option>
+            }
+        </select>
+        <span class="text-danger" asp-validation-for="Car.CategoryId"></span>
+    </div>
+
+    <div class="m-1">
+        <label class="form-label" asp-for="Car.Price">Price</label>
+        <input class="form-control" asp-for="Car.Price" />
+        <span class="text-danger" asp-validation-for="Car.Price"></span>
+    </div>
+
+    <div class="m-1">
+        <button class="btn btn-primary">Add</button>
+    </div>
+</form>

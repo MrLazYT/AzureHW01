@@ -1,0 +1,141 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@{
+    ViewData["Title"] = "Cars";
+}
+
+@inject SignInManager<User> SignInManager
+
+@model CarsViewModel
+
+<div class="container">
+    <h2>Top 5 Most Sold Cars</h2>
+
+    <hr />
+
+    <div class="d-flex">
+        @foreach (CarDto car in Model.TopFive)
+        {
+            <div class="card bg-secondary m-1" style="width: 17rem">
+                <div class="card-body">
+                    <div style="width: 100%; height: 120px;">
+                        <img class="card-img-top" style="width: 100%; height: 100%; object-fit: cover" src="@car.ImagePath" alt="@car.Model image" />
+                    </div>
+
+                    <div class="m-1">
+                        <h5 class="card-title">@car.Model</h5>
+                        <p class="card-text">@car.Color</p>
+                        <p class="card-text">@car.Year</p>
+                        <p class="card-text">@car.CategoryName</p>
+                        <h5 class="card-subtitle text-end">$@car.Price</h5>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="container d-flex">
+    <div class="nav flex-column text-start">
+        @foreach(CategoryDto category in Model.Categories)
+        {
+            @if (ViewBag.SelectedCategoryId == category.Id)
+            {
+                <a class="nav-link disabled" asp-controller="Cars" asp-action="Index" asp-route-categoryId="@category.Id">@category</a>
+            }
+            else
+            {
+                <a class="nav-link" asp-controller="Cars" asp-action="Index" asp-route-categoryId="@category.Id">@category</a>
+            }
+        }
+    </div>
+
+    <div class="container">
+        <div class="">
+            <span>Sort By:</span>
+
+            <div class="btn-group m-0">
+                @for(int i = 0; i < Model.CarsProperties.Count; i++)
+                {
+                    @if(ViewBag.CarPropertyId == i && !ViewBag.IsDescending)
+                    {
+                        <a class="btn btn-secondary disabled" asp-controller="Cars" asp-action="Index" asp-route-propertyId="@i">@Model.CarsProperties[i]</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-secondary" asp-controller="Cars" asp-action="Index" asp-route-propertyId="@i">@Model.CarsProperties[i]</a>
+                    }
+                }
+
+                @for(int i = 0; i < Model.CarsProperties.Count; i++)
+                {
+                    @if (ViewBag.CarPropertyId == i && ViewBag.IsDescending)
+                        {
+                        <a class="btn btn-secondary disabled" asp-controller="Cars" asp-action="Index" asp-route-propertyId="@i" asp-route-isDescending="true">@Model.CarsProperties[i] descending</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-secondary" asp-controller="Cars" asp-action="Index" asp-route-propertyId="@i" asp-route-isDescending="true">@Model.CarsProperties[i] descending</a>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="btn-group">
+            @if(SignInManager.IsSignedIn(User))
+            {
+                <a class="btn btn-primary m-1" asp-controller="Cars" asp-action="Add">Add Car</a>
+            }
+        </div>
+
+        <div class="d-flex flex-wrap">
+            @foreach(ProductCartViewModel viewModel in Model.Cars)
+            {
+                <div class="card m-1" style="width: 17rem">
+                    <img />
+
+                    <div class="card-body">
+                        <div class="container" style="width: 100%; height: 120px;">
+                            <img class="card-img-top" style="width: 100%; height: 100%; object-fit: cover" src="@viewModel.Car.ImagePath" alt="@viewModel.Car.Model image" />
+                        </div>
+
+                        <div class="container m-1">
+                            <h5 class="card-title">@viewModel.Car.Model</h5>
+                            <p class="card-text">@viewModel.Car.Color</p>
+                            <p class="card-text">@viewModel.Car.Year</p>
+                            <p class="card-text text-primary">@viewModel.Car.CategoryName</p>
+                            <h5 class="card-subtitle text-end">$@viewModel.Car.Price</h5>
+                        </div>
+
+                        <div>
+                            @if (viewModel.Car.StorageCount == 0)
+                            {
+                                <p class="text-danger">Not Available</p>
+                            }
+                        </div>
+
+                        <div class="btn-group">
+                            @if (viewModel.Car.StorageCount > 0)
+                            {
+                                @if(viewModel.IsInCart)
+                                {
+                                    <a class="btn btn-primary disabled" asp-controller="Cart" asp-action="Add" asp-route-id="@viewModel.Car.Id">Added in Cart</a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-primary" asp-controller="Cart" asp-action="Add" asp-route-id="@viewModel.Car.Id">Add to Cart</a>
+                                }
+                            }
+
+                            @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                            {
+                                <a class="btn btn-primary" asp-controller="Cars" asp-action="Edit" asp-route-id="@viewModel.Car.Id">Edit</a>
+                                <a class="btn btn-danger" asp-controller="Cars" asp-action="Delete" asp-route-id="@viewModel.Car.Id">Delete</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

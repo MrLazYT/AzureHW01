@@ -1,0 +1,73 @@
+﻿@using AutoShop.Extensions;
+
+@{
+    Dictionary<int, int> idsAndQuantities = Context.Session.GetObject<Dictionary<int, int>>("cart");
+}
+
+@model List<CarDto>
+
+<div class="container w-50">
+    @if (Model != null && Model.Count != 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Image</th>
+                    <th>Model</th>
+                    <th>Year</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach(CarDto car in Model)
+                {
+                    <tr>
+                        <th>@car.Id</th>
+                        <td><img style="width: 150px;" src="@car.ImagePath" /></td>
+                        <td>@car.Model</td>
+                        <td>@car.Year</td>
+                        <td>@car.CategoryName</td>
+                        <td>@(car.Price * @idsAndQuantities[car.Id])</td>
+                        <td>
+                            <div class="container d-flex">
+                                <div class="btn-group">
+                                    @if (idsAndQuantities[car.Id] == 1)
+                                    {
+                                        <a class="btn btn-primary disabled" asp-controller="Cart" asp-action="MinusProductQuantity" asp-route-id="@car.Id">-</a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-primary" asp-controller="Cart" asp-action="MinusProductQuantity" asp-route-id="@car.Id">-</a>
+                                    }
+                                    
+                                    <span class="btn btn-light disabled">@idsAndQuantities[car.Id]</span>
+                                    
+                                    @if (idsAndQuantities[car.Id] == car.StorageCount)
+                                    {
+                                        <a class="btn btn-primary disabled" asp-controller="Cart" asp-action="PlusProductQuantity" asp-route-id="@car.Id">+</a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-primary" asp-controller="Cart" asp-action="PlusProductQuantity" asp-route-id="@car.Id">+</a>
+                                    }
+                                </div>
+                                
+                                <a class="btn btn-white m-1" asp-controller="Cart" asp-action="Remove" asp-route-id="@car.Id"><i class="fa-solid fa-trash text-danger"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <a class="btn btn-primary" asp-controller="Order" asp-action="Create">Confirm Order</a>
+    }
+    else
+    {
+        <h3>The Cart is empty</h3>
+    }
+</div>
